@@ -1,0 +1,34 @@
+{
+  "users": [
+    {
+      "name": "Avani",
+      "email": "Avani@gmail.com",
+      "phone": "06355639898",
+      "id": 2
+    },
+    {
+      "name": "Priya",
+      "email": "Priya24793@gmail.com",
+      "phone": "06355639898",
+      "id": 4
+    },
+    {
+      "name": "maya",
+      "email": "maya24793@gmail.com",
+      "phone": "06355639898",
+      "id": 5
+    },
+    {
+      "name": "pooja",
+      "email": "pooja4793@gmail.com",
+      "phone": "06355639898",
+      "id": 7
+    },
+    {
+      "name": "Jiya",
+      "email": "jiya4793@gmail.com",
+      "phone": "06355639898",
+      "id": 8
+    }
+  ]
+}
