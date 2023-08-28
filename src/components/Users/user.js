@@ -1,149 +1,142 @@
 import React,{useEffect,useState} from 'react'
 import axios from 'axios'
-import {Link,useNavigate, useParams} from 'react-router-dom'
-import  {Modal} from 'antd' ;
+import {Link,useNavigate,useParams ,useSearchParams, useLocation} from 'react-router-dom'
+import {Modal} from 'antd';
+import Pagination from  './Pagination';
 
 function User(props) {
-	// this is for the edit button
-
-	const [editMode, setEditMode] = useState({});
-  const [editedData, setEditedData] = useState({});
-
-// this is for the  delete button
-const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(true);
-const [isModelOpen , setIsModelOpen]  = useState(false);
-const [deluser , setDeluser] = useState();
-
-// this is for the modal
 
 
 
+
+	const [currentPage, setCurrentPage] = useState(1);
+	const itemsPerPage = 5;
+	const [totalItems, setTotalItems] = useState(0); // Total number of items from the API
+
+
+	// this is for the  delete button
+	const [showDeleteConfirmation]=useState(true);
+	const [isModelOpen,setIsModelOpen]=useState(false);
+	const [setDeluser]=useState();
+
+	// this is for the modal
 	const [data,setData]=useState([]);
 	const [value,setValue]=useState("");
 	const [sortValue,setSortValue]=useState("");
-	const [currentPage,setCurrentPage]=useState(0);
-	const [pageLimit]=useState(6);
+
+
 	const navigate=useNavigate();
-	const {id} = useParams();
+	const {id}=useParams();
 	const sortOptions=["name","email","phone"];
 
 
+		// this is for the pagination
+		const location = useLocation();
+		const queryParams = new URLSearchParams(location.search);
+		//queryParams.set('_page', currentPage);
+		//const [currentPage, setCurrentPage] = useState(1)
+		const [usersPerPage] = useState(2)
 
-	const AddUSer  = (newData) =>{
-  setData((prev) =>[...prev,newData]);
+		const [searchParams,setSesrchParams] = useSearchParams()
+		const pageParam = searchParams.get('page');
+		useEffect(() => {
+			if (!pageParam) {
+				// navigate('/user?page=1', { replace: true });
+				// return;
+				setSesrchParams({page:1})
+			}
+			if (!isNaN(pageParam)) {
+				setCurrentPage(parseInt(pageParam));
+			} else {
+				setCurrentPage(1);
+			}
+		}, [pageParam]);
+
+
+		const handlePaginationClick = (newPage) => {
+			setCurrentPage(newPage);
+			//queryParams.set('_page', newPage);
+			navigate(`/user?${newPage}`,{replace:true});
+		};
+
+
+	// this is for the modal function
+	const OnOkay=() => {
+		handleDelete(+id);
+		setIsModelOpen(false)
+		navigate('/user')
 	}
 
+	const OnCancel=() => {
+		setIsModelOpen(false)
+		navigate('/user')
 
-
-
-
-// this is for the modal function
-
-const OnOkay  = ()  =>{
-handleDelete(+id);
-setIsModelOpen(false)
-navigate('/user')
-}
-
-const OnCancel =  () =>{
-	setIsModelOpen(false)
-	navigate('/user')
-
-}
-
-
-	// edit mode function
-
-	const toggleEditMode = (id) => {
-		setEditMode((prevMode) => ({
-			...prevMode,
-			[id]: !prevMode[id],
-		}));
-	};
-
-	const handleEditChange = (id, field, value) => {
-		setEditedData((prevData) => ({
-			...prevData,
-			[id]: {
-				...prevData[id],
-				[field]: value,
-			},
-		}));
-	};
-
-	const saveEditedData = (id) => {
-		const editedItem = editedData[id];
-		axios
-			.put(`http://localhost:3000/users/${id}`, editedItem)
-			.then(() => {
-
-				loadUserData(currentPage * pageLimit, (currentPage + 1) * pageLimit, 0);
-				setEditMode((prevMode) => ({
-					...prevMode,
-					[id]: false,
-				}));
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
-
-	//________________________________________________________________
-	//________________________________________________________________
-
-
-
-	//const navigate = useNavigate();
+	}
 
 	useEffect(() => {
 		loadUserData();
-	},[data])
+	},[currentPage])
 
 
-	const loadUserData=async () => {
+	const loadUserData = async () => {
+		try {
+			const response = await axios.get(`http://localhost:3000/users/`, {
+				params: {
+					_page: currentPage,
+					_limit: itemsPerPage,
+				},
+			});
+			setData(response.data);
+			setTotalItems(response.headers['x-total-count']); // Set total items count
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
-		return await axios.get(`http://localhost:3000/users/`)
-			.then(result => {
-				setData(result.data);
-				setCurrentPage()
-			})
-	.catch(err => console.log(err))
-	}
 
-
-	// handleDelete
+//  pagination function
 
 	const handleDelete=() => {
 
-		const mydeldata  = data.filter((val) =>val.id === +id)
-		console.log(mydeldata	)
+		const mydeldata=data.filter((val) => val.id===+id)
+		console.log(mydeldata)
 		setDeluser(mydeldata)
 
-setIsModelOpen(true)
-			axios.delete(`http://localhost:3000/users/${id}`)
+		setIsModelOpen(true)
+		axios.delete(`http://localhost:3000/users/${id}`)
 			.then(result => {
 				console.log(result);
-				})
-				.catch(err => {
-					console.log(err);
-				})
+			})
+			.catch(err => {
+				console.log(err);
+			})
 	}
 
-	// define method here
 
+	// define method here
 	const handleSearch=async (e) => {
 
 		e.preventDefault();
-		return await axios.get(`http://localhost:3000/users?q=${value}`)
-		 .then((res) => {
-				setData(res.data)
-				setValue("");
-
-			})
-			.catch((err) => console.log(err))
+		console.log("Search triggered with value:", value); // Check if the function is being triggered
+		try {
+			const res = await axios.get(`http://localhost:3000/users?q=${value}`);
+			console.log("Search result:", res.data); // Check if data is being retrieved
+			setData(res.data);
+			setValue("");
+	} catch (err) {
+			console.log("Search error:", err);
 	}
 
+		//return await axios.get(`http://localhost:3000/users?q=${value}`)
+		//	.then((res) => {
+		//		setData(res.data)
+		//		setValue("");
+
+		//	})
+		//	.catch((err) => console.log(err))
+
+
+	}
 
 
 	const handleReset=() => {
@@ -164,22 +157,12 @@ setIsModelOpen(true)
 	}
 
 
-	const handleFilter=async (value) => {
-
-		return await axios.get(`http://localhost:3000/users?status=${value}&_order=asc`)
-			.then((res) => {
-				setData(res.data)
-
-			})
-			.catch((err) => console.log(err))
-
-	}
 
 
-	const handleEditState = () => {
-		console.log("Hllo" + props.identifier)
+	const handleEditState=() => {
+		console.log("Hllo"+props.identifier)
 		props.setFunction(props.identifier);
-		console.log("Bye" + props.identifier)
+		console.log("Bye"+props.identifier)
 	};
 
 	return (
@@ -188,9 +171,7 @@ setIsModelOpen(true)
 			<br></br>
 			<hr />
 			<div className='d-flex'>
-
 				<div>
-
 					<form style={{margin: "auto",padding: "15px",maxWidth: "400px",alignContent: "center"}}
 						className='d-flex input-group'
 						onSubmit={handleSearch}>
@@ -207,12 +188,9 @@ setIsModelOpen(true)
 					</form>
 				</div>
 
-
 				<div className='d-flex'>
 					Sort By:
 					<div>
-
-						{/*<label for="cars"> Sort Details</label> &nbsp;*/}
 
 						<select style={{width: "75%",borderRadius: '2px',height: "35px"}}
 							onChange={handleSort}
@@ -228,14 +206,6 @@ setIsModelOpen(true)
 						</select>
 					</div>
 
-
-					{/*  Filter data pending  */}
-					<div>
-						Filter By: &nbsp;&nbsp;
-						<button className='btn btn-secondary' onClick={() => handleFilter("Renu")}> Email</button> &nbsp;
-						<button className='btn btn-warning' onClick={() => handleFilter("Maya")}> Name</button>
-					</div>
-
 				</div>
 
 			</div>
@@ -243,7 +213,7 @@ setIsModelOpen(true)
 
 			<div className='w-75 rounded bg-white border shadow p-4'>
 				<div className='d-flex justify-content-end'>
-					<Link to={'/user/add'}  className='btn btn-success' onClick={handleEditState}>Add +</Link></div>
+					<Link to={'/user/add'} className='btn btn-success' onClick={handleEditState}>Add +</Link></div>
 
 				<table className='table table-striped'>
 
@@ -271,115 +241,88 @@ setIsModelOpen(true)
 									<td> {data.name}</td>
 									<td> {data.email}</td>
 									<td> {data.phone}</td>
-
 									<td>
-
-
 										<Link to={`/user/${data.id}`} className='btn btn-sm btn-info me-2 ms-2 px-3'> View </Link>
 										<Link to={`/user/edit/${data.id}`} className='btn btn-sm btn-primary me-2 ms-2 px-3' onClick={handleEditState}> Edit </Link>
+										{/*  delete button  */}
 
+										<Link to={`/user/delete/${data.id}`}
+											onClick={() => handleDelete(data.id)} // Call the new function
+											className='btn btn-sm btn-danger me-1'
+										>
+											Delete
+										</Link>
 
-{/*  delete button  */}
-
-
-                <Link to={`/user/delete/${data.id}`}
-                  onClick={() => handleDelete(data.id)} // Call the new function
-                  className='btn btn-sm btn-danger me-1'
-                >
-                  Delete
-                </Link>
-
-										{/*<Link to={`/user/delete/${data.id}`} onClick={e => handleDelete(data.id)} className='btn btn-sm btn-danger  me-1'> Delete</Link>*/}
 
 									</td>
 								</tr>
 							</tbody>
 						))
-						)}
+					)}
 
 
 				</table>
-
-
 			</div>
- {/*   this is a pagination  */}
 
 
 
 
+			<br />
+			{/*   this is a pagination  */}
+			<Pagination
+  currentPage={currentPage}
+  setCurrentPage={setCurrentPage}
+  itemsPerPage={itemsPerPage}
+  totalItems={totalItems}
+>
 
 
-{/*  this is a  delete modal */}
+<div className="d-flex justify-content-center mt-4">
+    {currentPage > 1 && (
+      <button
+        className="btn btn-secondary me-2"
+        onClick={() => handlePaginationClick(currentPage - 1)}
+      >
+        Previous
+      </button>
+    )}
+    {currentPage < Math.ceil(totalItems / itemsPerPage) && (
+      <button
+        className="btn btn-secondary"
+        onClick={() => handlePaginationClick(currentPage + 1)}
+      >
+        Next
+      </button>
+    )}
+  </div>
+
+</Pagination>
 
 
 
- {showDeleteConfirmation && (
+			{/*  this is a  delete modal */}
 
-<Modal
+			{showDeleteConfirmation&&(
 
- title= 'Delete Details'
- open = {isModelOpen}
- onOk = {OnOkay}
- onCancel = {OnCancel} >
-			   {/*<div className='modal'>
-          <div className='modal-dialog'>
-            <div className='modal-content'>
-              <div className='modal-header'>
+				<Modal
+					title='Delete Details'
+					open={isModelOpen}
+					onOk={OnOkay}
+					onCancel={OnCancel} >
 
-                <h5 className='modal-title'>Confirm Delete</h5>
-
-
-                <button
-                  type='button'
-                  className='close'
-                  onClick={() => setShowDeleteConfirmation(false)} // Close the modal
-                >
-                  <span>&times;</span>
-                </button>
-              </div>
-              <div className='modal-body'>
-                Are you sure you want to delete this user?
-              </div>
-              <div className='modal-footer'>
-                <button
-                  type='button'
-                  className='btn btn-secondary'
-                  onClick={() => setShowDeleteConfirmation(false)} // Close the modal
-                >
-                  Cancel
-                </button>
-                <button
-                  type='button'
-                  className='btn btn-danger'
-                  onClick={() => {
-                    setShowDeleteConfirmation(false); // Close the modal
-                    // Perform delete action here...
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>*/}
-
-
- <div  className='delete_modal'>
-	<br />
-
-	{/*Name : <h2>{data.name}</h2>
-	Email : <h2>{data.email}</h2>
-	Phone : <h2>{data.phone}</h2>*/}
-
-  <p>Are you want to delete record?</p>
-   </div>
-		 </Modal>
-      )}
-
+					<div className='delete_modal'>
+						<br />
+						<p>Are you want to delete record?</p>
+					</div>
+				</Modal>
+			)}
 		</div>
+
+
+
 	);
 
-
-
 }
+
+
 export default User

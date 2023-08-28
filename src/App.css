@@ -12,7 +12,6 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -56,5 +55,24 @@
    background-color:rgb(249, 233, 233) ;
    box-shadow: 5px 10px #d64646
 
+
+}
+
+
+.btninfo{
+background-color: black;
+padding-left: 29px;
+padding-right: 29px;
+text-align: center;
+font-weight: bold;
+color: white;
+border-radius: 20px;
+height: 50px;
+
+}
+.pnf{
+  color: red;
+  text-align: center;
+  margin-top: 90px;
 
 }

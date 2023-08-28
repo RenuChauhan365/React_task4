@@ -1,34 +1,106 @@
 {
   "users": [
     {
-      "name": "Avani",
-      "email": "Avani@gmail.com",
+      "name": "Avani patel",
+      "email": "avani@gmail.com",
+      "phone": "1234566789",
+      "id": 1
+    },
+    {
+      "name": "Renu Chauhan",
+      "email": "renu24793@gmail.com",
       "phone": "06355639898",
       "id": 2
     },
     {
-      "name": "Priya",
-      "email": "Priya24793@gmail.com",
+      "name": "Priya intawala ",
+      "email": "priya @gmail.com",
       "phone": "06355639898",
+      "id": 3
+    },
+    {
+      "name": "Medha singh",
+      "email": "singh@gmail.com",
+      "phone": "6355639898",
       "id": 4
     },
     {
-      "name": "maya",
-      "email": "maya24793@gmail.com",
+      "name": "Sumit ",
+      "email": "sumit34@gmail.com",
       "phone": "06355639898",
       "id": 5
     },
     {
-      "name": "pooja",
-      "email": "pooja4793@gmail.com",
+      "name": "Vedant rawat ",
+      "email": "vedant2323@gmail.com",
       "phone": "06355639898",
+      "id": 6
+    },
+    {
+      "name": " Om Mishra ",
+      "email": "om@gmail.com",
+      "phone": "6355639898",
       "id": 7
     },
     {
-      "name": "Jiya",
-      "email": "jiya4793@gmail.com",
+      "name": "vishal ",
+      "email": "vishal@gmail.com",
       "phone": "06355639898",
       "id": 8
+    },
+    {
+      "name": "manisha",
+      "email": "manisha@gmail.com",
+      "phone": "06355639898",
+      "id": 9
+    },
+    {
+      "name": "usha",
+      "email": "usha@gmail.com",
+      "phone": "06355639898",
+      "id": 10
+    },
+    {
+      "name": "resha",
+      "email": "renu23@gmail.com",
+      "phone": "06355639898",
+      "id": 11
+    },
+    {
+      "name": "Dhruv  ",
+      "email": "dv@gmail.com",
+      "phone": "06355639898",
+      "id": 12
+    },
+    {
+      "name": "Vishal Pansuriya 3",
+      "email": "pansu793@gmail.com",
+      "phone": "9855639898",
+      "id": 13
+    },
+    {
+      "name": "Avani Patel2",
+      "email": "avni793@gmail.com",
+      "phone": "06355639898",
+      "id": 14
+    },
+    {
+      "name": "Zeel ",
+      "email": "zeel@gmail.com",
+      "phone": "985639898",
+      "id": 15
+    },
+    {
+      "name": "Priyanka",
+      "email": "piyu93@gmail.com",
+      "phone": "9055639898",
+      "id": 16
+    },
+    {
+      "name": "Nensi",
+      "email": "nensi@gmail.com",
+      "phone": "2113133123123",
+      "id": 17
     }
   ]
 }
